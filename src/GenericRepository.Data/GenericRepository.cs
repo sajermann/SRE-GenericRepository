@@ -56,7 +56,13 @@ namespace GenericRepository.Data
       else
       {
         // _entities.Attach(entity); <== Esse attach deveria ser no relacionamento, do jeito que está, está errado
-        //_context.Entry<T>(entity).State = EntityState.Detached;
+
+        //Detached = Faz o relacionamento porém atualiza o name do relacionado;
+        //Modificad = Não Faz o relacionamento atualiza apenas o principal;
+        //Unchanged = Não Faz o relacionamento atualiza apenas o principal;
+        //Added = Não Faz o relacionamento atualiza apenas o principal;
+        //_context.Entry<T>(entity).State = EntityState.Added;
+        _entities.Attach(entity);
         _context.Update(entity);
       }
       await _context.SaveChangesAsync();
