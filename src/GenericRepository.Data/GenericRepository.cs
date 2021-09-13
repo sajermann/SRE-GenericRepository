@@ -46,9 +46,8 @@ namespace GenericRepository.Data
 
     public async Task<T> AddOrUpdate(T entity)
     {
-      //Insert => Funciona bem,
-      //Update => para funcionar, tem que limpar o relacionamento antes, se não limpar da erro de foregn key, pois mesmo sendo 
-      //update o EF tentará adicionar um novo registro na tabela de relacionamento.
+      //Insert Funciona bem,
+      //Update não funciona pois precisa arrumar um jeito de dar attach nos relacionamentos
             
       if (!_entities.Any(e => e == entity))
       {
@@ -56,7 +55,8 @@ namespace GenericRepository.Data
       }
       else
       {
-        _context.Entry<T>(entity).State = EntityState.Detached;
+        // _entities.Attach(entity); <== Esse attach deveria ser no relacionamento, do jeito que está, está errado
+        //_context.Entry<T>(entity).State = EntityState.Detached;
         _context.Update(entity);
       }
       await _context.SaveChangesAsync();
