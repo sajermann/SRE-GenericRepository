@@ -1,1 +1,1 @@
-SajermannReadyExamples
+Sajermann Ready Examples - Generic Repository
