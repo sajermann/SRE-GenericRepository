@@ -23,8 +23,9 @@ namespace GenericRepository.Data
 
     public async Task<List<T>> Find(
       Expression<Func<T, bool>> where = null,
-      //Expression<Func<T, object>>[] includes = null,
-      //Expression<Func<T, object>> select = null,
+      Expression<Func<T, object>>[] includes = null,
+      Expression<Func<object, object>>[] thenIncludes = null,
+      Expression<Func<T, T>> selects = null,
       Expression<Func<T, object>> orderByDesc = null,
       Expression<Func<T, object>> orderByAsc = null,
       int pageNumber = 0,
@@ -34,8 +35,16 @@ namespace GenericRepository.Data
       List<T> results;
       IQueryable<T> query = _entities.AsNoTracking();
       if (where != null) query = query.Where(where);
-      //if (includes != null) query = includes.Aggregate(query, (current, includeProperty) => current.Include(includeProperty));
-      //if (select != null) query = query.Select(select);
+
+
+      if (includes != null) query = includes
+          .Aggregate(query, (current, includeProperty) => current
+          .Include(includeProperty));
+
+
+
+
+      if (selects != null) query = query.Select(selects);
       if (orderByDesc != null) query = query.OrderByDescending(orderByDesc);
       if (orderByAsc != null) query = query.OrderBy(orderByAsc);
       if (pageNumber > 0) query = query.Skip((pageNumber - 1) * itemsPerPage);
@@ -48,7 +57,7 @@ namespace GenericRepository.Data
     {
       //Insert Funciona bem,
       //Update não funciona pois precisa arrumar um jeito de dar attach nos relacionamentos
-            
+
       if (!_entities.Any(e => e == entity))
       {
         _entities.Attach(entity);
@@ -62,7 +71,7 @@ namespace GenericRepository.Data
         //Unchanged = Não Faz o relacionamento atualiza apenas o principal;
         //Added = Não Faz o relacionamento atualiza apenas o principal;
         //_context.Entry<T>(entity).State = EntityState.Added;
-        _entities.Attach(entity);
+        //_entities.Attach(entity);
         _context.Update(entity);
       }
       await _context.SaveChangesAsync();

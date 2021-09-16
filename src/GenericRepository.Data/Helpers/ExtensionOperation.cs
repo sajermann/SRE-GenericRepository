@@ -8,10 +8,9 @@ namespace GenericRepository.Data.Helpers
 {
   public static class ExtensionOperation
   {
-    public static T FirstOrDefault<T, L>(
-        this IEnumerable<T> results)
+    public static T FirstOrDefault<T>(this Task<List<T>> results)
     {
-       return results.FirstOrDefault<T>();
+      return results.Result.FirstOrDefault();
     }
   }
 }

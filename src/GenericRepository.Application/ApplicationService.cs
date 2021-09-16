@@ -1,10 +1,12 @@
 ﻿using AutoMapper;
 using GenericRepository.Application.Dto;
 using GenericRepository.Application.Interfaces;
+using GenericRepository.Data.Helpers;
 using GenericRepository.Data.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace GenericRepository.Application
@@ -28,8 +30,22 @@ namespace GenericRepository.Application
 
     public async Task<ApplicationDto> GetById(int id)
     {
-      var results = _mapper.Map<List<ApplicationDto>>(await _genericRepository.Find(where: b=>b.Id == id));
-      return results.FirstOrDefault();
+      // TODO: Verificar se está async
+      var includes = new Expression<Func<Domain.Application, object>>[] { b => b.Roles };
+      var thenInclude = new Expression<Func<Domain.Role, object>>[] { b => b.Users };
+
+
+      Expression<Func<Domain.Application, Domain.Application>> select = b => new Domain.Application { Id = b.Id };
+      
+      
+      var t = _genericRepository.Find(
+        where: b => b.Id == id,
+        includes: includes,
+        selects: select
+        )
+        .FirstOrDefault<Domain.Application>();
+      var results = _mapper.Map<ApplicationDto>(t);
+      return results;
     }
 
     public async Task<ApplicationDto> Add(ApplicationDto entity)
