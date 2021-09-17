@@ -28,20 +28,20 @@ namespace GenericRepository.Application
       return results;
     }
 
+      // TODO: Verificar se está async com o firstorDefaultr
     public async Task<ApplicationDto> GetById(int id)
     {
-      // TODO: Verificar se está async
-      var includes = new Expression<Func<Domain.Application, object>>[] { b => b.Roles };
-      var thenInclude = new Expression<Func<Domain.Role, object>>[] { b => b.Users };
 
+      var includes = new List<Expression<Func<Domain.Application, object>>>();
+      Expression<Func<Domain.Application, object>> include = b => b.Roles;
+      includes.Add(include);
 
-      Expression<Func<Domain.Application, Domain.Application>> select = b => new Domain.Application { Id = b.Id };
-      
-      
+      //Expression<Func<Domain.Application, Domain.Application>> select = b => new Domain.Application { Id = b.Id };
+            
       var t = _genericRepository.Find(
         where: b => b.Id == id,
-        includes: includes,
-        selects: select
+        includes: includes
+        //selects: select
         )
         .FirstOrDefault<Domain.Application>();
       var results = _mapper.Map<ApplicationDto>(t);

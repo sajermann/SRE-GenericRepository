@@ -23,8 +23,8 @@ namespace GenericRepository.Data
 
     public async Task<List<T>> Find(
       Expression<Func<T, bool>> where = null,
-      Expression<Func<T, object>>[] includes = null,
-      Expression<Func<object, object>>[] thenIncludes = null,
+      List<Expression<Func<T, object>>> includes = null,
+      //Expression<Func<object, object>>[] thenIncludes = null,
       Expression<Func<T, T>> selects = null,
       Expression<Func<T, object>> orderByDesc = null,
       Expression<Func<T, object>> orderByAsc = null,
@@ -37,12 +37,16 @@ namespace GenericRepository.Data
       if (where != null) query = query.Where(where);
 
 
-      if (includes != null) query = includes
-          .Aggregate(query, (current, includeProperty) => current
-          .Include(includeProperty));
+      //if (includes != null) query = includes
+      //    .Aggregate(query, (current, includeProperty) => current
+      //    .Include(includeProperty));
 
 
-
+      if (includes != null)
+      {
+        foreach (var item in includes)
+          query = query.Include(item);
+      }
 
       if (selects != null) query = query.Select(selects);
       if (orderByDesc != null) query = query.OrderByDescending(orderByDesc);
